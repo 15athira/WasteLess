@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Record - Food Waste ML{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card glass-card shadow-lg border-0">
+                    <div class="card-body p-4 p-md-5">
+                        <div class="text-center mb-4">
+                            <div class="icon-circle mx-auto mb-3">
+                                <i class="bi bi-pencil-square fs-1 text-primary"></i>
+                            </div>
+                            <h2 class="fw-bold mb-2">Edit Record</h2>
+                            <p class="text-muted">Update mess data for {{ record.date }}</p>
+                        </div>
+
+                        <form action="/edit/{{ record.id }}" method="POST" class="needs-validation" novalidate>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="date" class="form-label fw-semibold">
+                                        <i class="bi bi-calendar3 me-2"></i>Date
+                                    </label>
+                                    <input type="date" class="form-control form-control-lg" id="date" name="date"
+                                        value="{{ record.date }}" required>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="students" class="form-label fw-semibold">
+                                        <i class="bi bi-people me-2"></i>Number of Students
+                                    </label>
+                                    <input type="number" class="form-control form-control-lg" id="students"
+                                        name="students" value="{{ record.students }}" min="1" required>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="cooked" class="form-label fw-semibold">
+                                        <i class="bi bi-fire me-2"></i>Quantity Cooked (kg)
+                                    </label>
+                                    <input type="number" step="0.01" class="form-control form-control-lg" id="cooked"
+                                        name="cooked" value="{{ record.cooked }}" min="0.01" required>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="leftover" class="form-label fw-semibold">
+                                        <i class="bi bi-trash me-2"></i>Quantity Leftover (kg)
+                                    </label>
+                                    <input type="number" step="0.01" class="form-control form-control-lg" id="leftover"
+                                        name="leftover" value="{{ record.leftover }}" min="0" required>
+                                </div>
+
+                                <div class="col-12 mt-4">
+                                    <button type="submit" class="btn btn-primary btn-lg w-100 py-3 mb-2">
+                                        <i class="bi bi-check-circle me-2"></i>Update Record
+                                    </button>
+                                    <a href="/records" class="btn btn-outline-secondary btn-lg w-100 py-3">
+                                        <i class="bi bi-x-circle me-2"></i>Cancel
+                                    </a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Form validation
+    (function () {
+        'use strict'
+        var forms = document.querySelectorAll('.needs-validation')
+        Array.prototype.slice.call(forms).forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+                form.classList.add('was-validated')
+            }, false)
+        })
+    })()
+</script>
+{% endblock %}

@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+
+{% block title %}ML Prediction - Food Waste ML{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5 fade-in">
+            <div class="icon-circle-lg mx-auto mb-4">
+                <i class="bi bi-cpu fs-1 text-primary"></i>
+            </div>
+            <h1 class="display-4 fw-bold mb-3">ML Prediction</h1>
+            <p class="lead text-muted">Get data-driven cooking quantity recommendations</p>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <!-- Prediction Form -->
+                <div class="card glass-card shadow-lg border-0 mb-4">
+                    <div class="card-body p-4 p-md-5">
+                        <h5 class="card-title fw-semibold mb-4">
+                            <i class="bi bi-sliders me-2"></i>Prediction Parameters
+                        </h5>
+
+                        <form action="/predict" method="POST" class="needs-validation" novalidate>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="students" class="form-label fw-semibold">
+                                        <i class="bi bi-people me-2"></i>Expected Students
+                                    </label>
+                                    <input type="number" class="form-control form-control-lg" id="students"
+                                        name="students" min="1" required placeholder="e.g., 500">
+                                    <div class="form-text">Enter expected number of students</div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label for="weekday" class="form-label fw-semibold">
+                                        <i class="bi bi-calendar-week me-2"></i>Day of Week
+                                    </label>
+                                    <select class="form-select form-select-lg" id="weekday" name="weekday">
+                                        <option value="">Today</option>
+                                        <option value="0">Monday</option>
+                                        <option value="1">Tuesday</option>
+                                        <option value="2">Wednesday</option>
+                                        <option value="3">Thursday</option>
+                                        <option value="4">Friday</option>
+                                        <option value="5">Saturday</option>
+                                        <option value="6">Sunday</option>
+                                    </select>
+                                    <div class="form-text">Select day or use today</div>
+                                </div>
+
+                                <div class="col-12 mt-4">
+                                    <button type="submit" class="btn btn-primary btn-lg w-100 py-3">
+                                        <i class="bi bi-lightning-charge me-2"></i>Generate Prediction
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Prediction Results -->
+                {% if prediction %}
+                <div class="card glass-card shadow-lg border-0 border-success slide-up">
+                    <div class="card-body p-4 p-md-5">
+                        <div class="text-center mb-4">
+                            <div class="prediction-icon mx-auto mb-3">
+                                <i class="bi bi-check-circle-fill text-success"></i>
+                            </div>
+                            <h4 class="fw-bold mb-2">Prediction Generated Successfully!</h4>
+                            <p class="text-muted">Based on {{ students }} students on {{ weekday_name }}</p>
+                        </div>
+
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-6">
+                                <div class="prediction-result-card bg-info-subtle">
+                                    <h6 class="text-muted mb-2">Predicted Consumption</h6>
+                                    <h2 class="fw-bold text-info mb-0">{{ prediction }} kg</h2>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="prediction-result-card bg-success-subtle">
+                                    <h6 class="text-muted mb-2">Recommended Cooking</h6>
+                                    <h2 class="fw-bold text-success mb-0">{{ recommended }} kg</h2>
+                                    <small class="text-muted">+5% safety margin</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Model Accuracy -->
+                        <div class="alert alert-light border mb-4">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div>
+                                    <h6 class="fw-semibold mb-1">
+                                        <i class="bi bi-graph-up me-2"></i>Model Accuracy
+                                    </h6>
+                                    <p class="mb-0 text-muted small">R² Score (Coefficient of Determination)</p>
+                                </div>
+                                <div class="text-end">
+                                    <h3
+                                        class="fw-bold mb-0 {% if score >= 80 %}text-success{% elif score >= 60 %}text-warning{% else %}text-danger{% endif %}">
+                                        {{ score }}%
+                                    </h3>
+                                    {% if score >= 80 %}
+                                    <span class="badge bg-success">Excellent</span>
+                                    {% elif score >= 60 %}
+                                    <span class="badge bg-warning">Good</span>
+                                    {% else %}
+                                    <span class="badge bg-danger">Fair</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Recommendation Card -->
+                        <div class="card bg-gradient-primary text-white border-0">
+                            <div class="card-body">
+                                <h6 class="fw-semibold mb-3">
+                                    <i class="bi bi-lightbulb me-2"></i>Recommendation
+                                </h6>
+                                <p class="mb-0">
+                                    Cook approximately <strong>{{ recommended }} kg</strong> of food to serve {{
+                                    students }} students on {{ weekday_name }}.
+                                    This includes a 5% safety margin to prevent shortages while minimizing waste.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="text-center mt-4">
+                            <a href="/predict" class="btn btn-outline-primary me-2">
+                                <i class="bi bi-arrow-clockwise me-2"></i>New Prediction
+                            </a>
+                            <a href="/dashboard" class="btn btn-outline-secondary">
+                                <i class="bi bi-speedometer2 me-2"></i>View Dashboard
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Info Card -->
+                <div class="card glass-card mt-4">
+                    <div class="card-body p-4">
+                        <h6 class="fw-semibold mb-3">
+                            <i class="bi bi-info-circle me-2"></i>How It Works
+                        </h6>
+                        <ul class="mb-0">
+                            <li class="mb-2">The ML model uses <strong>Linear Regression</strong> to predict consumption
+                            </li>
+                            <li class="mb-2">Features: Number of students and day of the week</li>
+                            <li class="mb-2">Requires minimum <strong>10 historical records</strong> for training</li>
+                            <li class="mb-0">R² score indicates prediction accuracy (higher is better)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Form validation
+    (function () {
+        'use strict'
+        var forms = document.querySelectorAll('.needs-validation')
+        Array.prototype.slice.call(forms).forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+                form.classList.add('was-validated')
+            }, false)
+        })
+    })()
+</script>
+{% endblock %}

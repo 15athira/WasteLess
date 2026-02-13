@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Food Waste ML{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5 fade-in">
+            <h1 class="display-4 fw-bold mb-3">
+                <i class="bi bi-speedometer2 me-3"></i>Dashboard
+            </h1>
+            <p class="lead text-muted">Comprehensive overview of mess operations and performance</p>
+        </div>
+
+        {% if no_data %}
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <div class="card glass-card text-center p-5">
+                    <i class="bi bi-inbox display-1 text-muted mb-3"></i>
+                    <h3 class="mb-3">No Data Available</h3>
+                    <p class="text-muted mb-4">Start by adding your first mess record to see analytics and insights.</p>
+                    <a href="/" class="btn btn-primary btn-lg">
+                        <i class="bi bi-plus-circle me-2"></i>Add First Record
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% else %}
+
+        <!-- Key Metrics -->
+        <div class="row g-4 mb-5">
+            <div class="col-md-6 col-lg-3">
+                <div
+                    class="metric-card glass-card {% if metrics.avg_waste < 5 %}border-success{% elif metrics.avg_waste < 10 %}border-warning{% else %}border-danger{% endif %}">
+                    <div class="metric-icon bg-danger-subtle">
+                        <i class="bi bi-trash text-danger"></i>
+                    </div>
+                    <div class="metric-content">
+                        <h6 class="metric-label">Average Waste</h6>
+                        <h2 class="metric-value">{{ metrics.avg_waste }}%</h2>
+                        <p class="metric-status mb-0">
+                            {% if metrics.avg_waste < 5 %} <span class="badge bg-success">Excellent</span>
+                                {% elif metrics.avg_waste < 10 %} <span class="badge bg-warning">Good</span>
+                                    {% else %}
+                                    <span class="badge bg-danger">Needs Improvement</span>
+                                    {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="metric-card glass-card border-warning">
+                    <div class="metric-icon bg-warning-subtle">
+                        <i class="bi bi-currency-rupee text-warning"></i>
+                    </div>
+                    <div class="metric-content">
+                        <h6 class="metric-label">Total Cost Loss</h6>
+                        <h2 class="metric-value">₹{{ metrics.total_loss }}</h2>
+                        <p class="metric-status mb-0 text-muted small">@ ₹60 per kg</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div
+                    class="metric-card glass-card {% if metrics.avg_efficiency >= 90 %}border-success{% elif metrics.avg_efficiency >= 80 %}border-warning{% else %}border-danger{% endif %}">
+                    <div class="metric-icon bg-success-subtle">
+                        <i class="bi bi-speedometer text-success"></i>
+                    </div>
+                    <div class="metric-content">
+                        <h6 class="metric-label">Efficiency Score</h6>
+                        <h2 class="metric-value">{{ metrics.avg_efficiency }}%</h2>
+                        <p class="metric-status mb-0">
+                            {% if metrics.avg_efficiency >= 90 %}
+                            <span class="badge bg-success">Outstanding</span>
+                            {% elif metrics.avg_efficiency >= 80 %}
+                            <span class="badge bg-warning">Good</span>
+                            {% else %}
+                            <span class="badge bg-danger">Poor</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="metric-card glass-card border-info">
+                    <div class="metric-icon bg-info-subtle">
+                        <i class="bi bi-table text-info"></i>
+                    </div>
+                    <div class="metric-content">
+                        <h6 class="metric-label">Total Records</h6>
+                        <h2 class="metric-value">{{ metrics.total_records }}</h2>
+                        <p class="metric-status mb-0 text-muted small">Data points collected</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional Metrics -->
+        <div class="row g-4 mb-5">
+            <div class="col-md-6">
+                <div class="card glass-card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title fw-semibold mb-3">
+                            <i class="bi bi-pie-chart me-2 text-primary"></i>Consumption Metrics
+                        </h5>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="text-muted">Total Consumption</span>
+                            <span class="fw-bold fs-5">{{ metrics.total_consumption }} kg</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-muted">Avg per Student</span>
+                            <span class="fw-bold fs-5">{{ metrics.avg_consumption_per_student }} kg</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card glass-card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title fw-semibold mb-3">
+                            <i class="bi bi-lightning me-2 text-warning"></i>Quick Actions
+                        </h5>
+                        <div class="d-grid gap-2">
+                            <a href="/" class="btn btn-outline-primary">
+                                <i class="bi bi-plus-circle me-2"></i>Add New Record
+                            </a>
+                            <a href="/analytics" class="btn btn-outline-success">
+                                <i class="bi bi-graph-up me-2"></i>View Analytics
+                            </a>
+                            <a href="/predict" class="btn btn-outline-info">
+                                <i class="bi bi-cpu me-2"></i>ML Prediction
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Table -->
+        <div class="card glass-card">
+            <div class="card-header bg-transparent border-0 pt-4 px-4">
+                <h5 class="card-title fw-semibold mb-0">
+                    <i class="bi bi-table me-2"></i>Recent Records
+                </h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    {{ tables|safe }}
+                </div>
+            </div>
+            <div class="card-footer bg-transparent border-0 pb-4 px-4">
+                <a href="/records" class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-eye me-2"></i>View All Records
+                </a>
+            </div>
+        </div>
+
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,309 @@
+{% extends "base.html" %}
+
+{% block title %}Analytics - Food Waste ML{% endblock %}
+
+{% block extra_css %}
+<style>
+    .chart-container {
+        position: relative;
+        height: 400px;
+        margin-bottom: 2rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5 fade-in">
+            <h1 class="display-4 fw-bold mb-3">
+                <i class="bi bi-graph-up me-3"></i>Analytics
+            </h1>
+            <p class="lead text-muted">Visualize trends and patterns in your mess operations</p>
+        </div>
+
+        {% if no_data %}
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <div class="card glass-card text-center p-5">
+                    <i class="bi bi-bar-chart display-1 text-muted mb-3"></i>
+                    <h3 class="mb-3">No Data for Analytics</h3>
+                    <p class="text-muted mb-4">Add at least 2 records to view visualizations and trends.</p>
+                    <a href="/" class="btn btn-primary btn-lg">
+                        <i class="bi bi-plus-circle me-2"></i>Add Records
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% else %}
+
+        <!-- Charts Grid -->
+        <div class="row g-4">
+            <!-- Waste Trend Chart -->
+            <div class="col-lg-6">
+                <div class="card glass-card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title fw-semibold mb-4">
+                            <i class="bi bi-graph-down text-danger me-2"></i>Waste Percentage Trend
+                        </h5>
+                        <div class="chart-container">
+                            <canvas id="wasteTrendChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Consumption Analysis Chart -->
+            <div class="col-lg-6">
+                <div class="card glass-card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title fw-semibold mb-4">
+                            <i class="bi bi-bar-chart text-primary me-2"></i>Consumption Analysis
+                        </h5>
+                        <div class="chart-container">
+                            <canvas id="consumptionChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Weekday Pattern Chart -->
+            <div class="col-lg-6">
+                <div class="card glass-card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title fw-semibold mb-4">
+                            <i class="bi bi-calendar-week text-warning me-2"></i>Waste by Weekday
+                        </h5>
+                        <div class="chart-container">
+                            <canvas id="weekdayChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Attendance Pattern Chart -->
+            <div class="col-lg-6">
+                <div class="card glass-card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title fw-semibold mb-4">
+                            <i class="bi bi-people text-info me-2"></i>Student Attendance Pattern
+                        </h5>
+                        <div class="chart-container">
+                            <canvas id="attendanceChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Insights Section -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <div class="card glass-card">
+                    <div class="card-body p-4">
+                        <h5 class="fw-semibold mb-3">
+                            <i class="bi bi-lightbulb me-2 text-warning"></i>Key Insights
+                        </h5>
+                        <ul class="mb-0">
+                            <li class="mb-2">Monitor waste trends to identify patterns and improvement opportunities
+                            </li>
+                            <li class="mb-2">Compare cooked vs consumed quantities to optimize cooking decisions</li>
+                            <li class="mb-2">Weekday analysis helps adjust quantities based on day-specific patterns
+                            </li>
+                            <li class="mb-0">Track attendance patterns to predict future requirements</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+{% if not no_data %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+    const chartData = {{ chart_data| tojson }};
+    // Common chart options
+    const commonOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                display: true,
+                position: 'top',
+            }
+        }
+    };
+
+    // Waste Trend Chart
+    const wasteTrendCtx = document.getElementById('wasteTrendChart').getContext('2d');
+    new Chart(wasteTrendCtx, {
+        type: 'line',
+        data: {
+            labels: chartData.waste_trend.labels,
+            datasets: [{
+                label: 'Waste %',
+                data: chartData.waste_trend.data,
+                borderColor: 'rgb(220, 53, 69)',
+                backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.4,
+                pointRadius: 4,
+                pointHoverRadius: 6
+            }]
+        },
+        options: Object.assign({}, commonOptions, {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Waste Percentage (%)'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Date'
+                    }
+                }
+            }
+        })
+    });
+
+    // Consumption Analysis Chart
+    const consumptionCtx = document.getElementById('consumptionChart').getContext('2d');
+    new Chart(consumptionCtx, {
+        type: 'bar',
+        data: {
+            labels: chartData.consumption_data.labels,
+            datasets: [
+                {
+                    label: 'Cooked (kg)',
+                    data: chartData.consumption_data.cooked,
+                    backgroundColor: 'rgba(255, 193, 7, 0.7)',
+                    borderColor: 'rgb(255, 193, 7)',
+                    borderWidth: 2
+                },
+                {
+                    label: 'Consumed (kg)',
+                    data: chartData.consumption_data.consumed,
+                    backgroundColor: 'rgba(40, 167, 69, 0.7)',
+                    borderColor: 'rgb(40, 167, 69)',
+                    borderWidth: 2
+                },
+                {
+                    label: 'Leftover (kg)',
+                    data: chartData.consumption_data.leftover,
+                    backgroundColor: 'rgba(220, 53, 69, 0.7)',
+                    borderColor: 'rgb(220, 53, 69)',
+                    borderWidth: 2
+                }
+            ]
+        },
+        options: Object.assign({}, commonOptions, {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Quantity (kg)'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Date'
+                    }
+                }
+            }
+        })
+    });
+
+    // Weekday Pattern Chart
+    const weekdayCtx = document.getElementById('weekdayChart').getContext('2d');
+    new Chart(weekdayCtx, {
+        type: 'bar',
+        data: {
+            labels: chartData.weekday_pattern.labels,
+            datasets: [{
+                label: 'Average Waste %',
+                data: chartData.weekday_pattern.data,
+                backgroundColor: [
+                    'rgba(13, 110, 253, 0.7)',
+                    'rgba(25, 135, 84, 0.7)',
+                    'rgba(255, 193, 7, 0.7)',
+                    'rgba(220, 53, 69, 0.7)',
+                    'rgba(111, 66, 193, 0.7)',
+                    'rgba(13, 202, 240, 0.7)',
+                    'rgba(255, 99, 132, 0.7)'
+                ],
+                borderColor: [
+                    'rgb(13, 110, 253)',
+                    'rgb(25, 135, 84)',
+                    'rgb(255, 193, 7)',
+                    'rgb(220, 53, 69)',
+                    'rgb(111, 66, 193)',
+                    'rgb(13, 202, 240)',
+                    'rgb(255, 99, 132)'
+                ],
+                borderWidth: 2
+            }]
+        },
+        options: Object.assign({}, commonOptions, {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Waste Percentage (%)'
+                    }
+                }
+            }
+        })
+    });
+
+    // Attendance Pattern Chart
+    const attendanceCtx = document.getElementById('attendanceChart').getContext('2d');
+    new Chart(attendanceCtx, {
+        type: 'line',
+        data: {
+            labels: chartData.attendance_data.labels,
+            datasets: [{
+                label: 'Students',
+                data: chartData.attendance_data.data,
+                borderColor: 'rgb(13, 202, 240)',
+                backgroundColor: 'rgba(13, 202, 240, 0.1)',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.4,
+                pointRadius: 4,
+                pointHoverRadius: 6
+            }]
+        },
+        options: Object.assign({}, commonOptions, {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Number of Students'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Date'
+                    }
+                }
+            }
+        })
+    });
+</script>
+{% endif %}
+{% endblock %}

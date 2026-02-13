@@ -167,9 +167,13 @@ def dashboard():
         df_display["waste_percent"] = df_display["waste_percent"].round(2)
         df_display["efficiency"] = df_display["efficiency"].round(2)
         
+        # Get current timestamp for "Last Updated"
+        last_updated = datetime.datetime.now().strftime('%d %b %Y')
+        
         return render_template("dashboard.html",
                              tables=df_display.to_html(classes='table table-striped table-hover', index=False),
                              metrics=metrics,
+                             last_updated=last_updated,
                              no_data=False)
     
     except Exception as e:

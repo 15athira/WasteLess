@@ -1,4 +1,4 @@
-# 🍽️ ML-Based Food Waste Optimization System
+# 🍽️ WasteLess - ML-Based Food Waste Optimization System
 
 > **Transform college mess operations from guess-based cooking to data-driven decisions**
 
@@ -6,6 +6,11 @@
 [![Flask](https://img.shields.io/badge/Flask-3.0-green.svg)](https://flask.palletsprojects.com/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![SDG 12](https://img.shields.io/badge/SDG-12-orange.svg)](https://sdgs.un.org/goals/goal12)
+
+## 🔗 Quick Links
+
+- **🌐 [Live Demo](https://web-production-e056.up.railway.app/)** - Try the application now!
+- **📦 [GitHub Repository](https://github.com/15athira/WasteLess)** - View source code
 
 ## 📌 Problem Statement
 
@@ -71,8 +76,8 @@ This system replaces guesswork with **machine learning predictions** to optimize
 
 ### Step 1: Clone the Repository
 ```bash
-git clone <repository-url>
-cd MyDates
+git clone https://github.com/15athira/WasteLess.git
+cd WasteLess
 ```
 
 ### Step 2: Create Virtual Environment
@@ -208,16 +213,20 @@ Visit: **http://127.0.0.1:5000**
 
 ### Home Page
 Modern landing page with hero section and data entry form
+![Home Page](screenshots/home.png)
 
 ### Dashboard
 Comprehensive metrics with color-coded performance indicators
+![Dashboard](screenshots/dashboard.png)
+
 
 ### Analytics
 Interactive Chart.js visualizations for trend analysis
+![Analytics](screenshots/analytics.png)
 
 ### ML Prediction
 Get data-driven cooking recommendations
-
+![ML Prediction](screenshots/prediction.png)
 ---
 
 ## 🌍 Supporting SDG 12
@@ -253,8 +262,8 @@ Created with ❤️ for sustainable mess management
 ## 📞 Support
 
 For issues or questions:
-- Create an issue on GitHub
-- Contact: [your-email@example.com]
+- 🐛 [Create an issue on GitHub](https://github.com/15athira/WasteLess/issues)
+- 💬 [Start a discussion](https://github.com/15athira/WasteLess/discussions)
 
 ---
 

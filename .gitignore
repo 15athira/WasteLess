@@ -29,6 +29,10 @@ env/
 *.sqlite
 *.sqlite3
 
+# Sample/Generated Data
+sample_data.csv
+*.csv
+
 # IDE
 .vscode/
 .idea/
